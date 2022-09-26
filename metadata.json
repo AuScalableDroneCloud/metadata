@@ -1,0 +1,55 @@
+{
+	"name": "Structural Geology",
+	"description": "Fracture detection with Complex Shearlet Transform based on https://github.com/rahulprabhakaran/Automatic-Fracture-Detection-Code Using the Python port of the Matlab Toolbox Complex Shearlet-Based Ridge and Edge Measurement by Rafael Reisenhofer: https://github.com/rgcda/PyCoShREM",
+	"notebook": {
+		"file": "CoSh_ensemble_webodm.ipynb",
+		"version": 1.0,
+		"parameters": {
+			"waveletEffSupp": 60.0,
+			"gaussianEffSupp": 20.0,
+			"scalesPerOctave": 4.0,
+			"shearLevel": 3.0,
+			"alpha": 0.2,
+			"octaves": 3.5,
+			"minContrast": 5.6,
+			"offset": 1.2,
+			"scalesUsedForPivotSearch": 1.0,
+			"min pixel value": 1.0,
+			"kernel size": 1024,
+			"min cluster size": 4098
+		},
+		"assets": [{
+				"type": "input",
+				"description": "orthomosaic",
+				"name": "data/Bingie_Bingie_area1.tif",
+				"format": "tif"
+			}, {
+				"type": "output",
+				"description": "shape file",
+				"name": "data/polyFile.shp",
+				"format": "shp"
+			},
+			{
+				"type": "output",
+				"description": "edge graph dot file",
+				"name": "data/graph.dot",
+				"format": "dot"
+			},
+			{
+				"type": "output",
+				"description": "A even-symmetric real-valued shearlet",
+				"name": "data/Bingie_Bingie_area1_edges.jpg",
+				"format": "jpg"
+			}
+		]
+	},
+	"author": "Uli Kelka",
+	"organisation": "CSIRO ",
+	"licence": {
+		"name": "It is distributed under BSD 3-Clause License"
+	},
+	"run": {
+		"date": "15 September 2022",
+		"duration": 36000
+	}
+}
