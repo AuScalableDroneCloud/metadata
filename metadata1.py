@@ -9,7 +9,7 @@ import os
 import json
 from datetime import datetime
 
-print("Start...")
+#print("Start...")
 
 collectionId = "80194"
 
@@ -31,7 +31,7 @@ headers_object = {"Accept":"application/json"}
 url = "https://daptst.csiro.au/dap/api/v2/collections/"+collectionId
 r = requests.get(url, auth=auth)
 if r.ok:
-    print("GET collection metadata completed successfully!")
+    print("Collection "+collectionId+" metadata accessed")
 else:
     print("Something went wrong!")
 metadata = r.json()
@@ -56,7 +56,7 @@ save_request = requests.put(url,
     auth=auth,
     headers=headers_object,
     json=new_metadata)
-print("Response code: {0}".format(save_request.status_code))
+#print("Response code: {0}".format(save_request.status_code))
 
 #print(metadata.get("name"))
 notebook = metadata.get("notebook")
@@ -64,15 +64,16 @@ assets = notebook.get("assets")
 index = 0
 files = []
 old_type = ""
-print(len(assets))
+print("Uploading "+str(len(assets))+" assets...")
 writeFiles = False
 for asset in assets:
    index = index +  1
-   print("*** asset '{0}' '{1}'".format(index,asset))
+   #print("*** asset '{0}' '{1}'".format(index,asset))
    filename = asset.get("name")
    type = asset.get("type")
+   print(str(index)+": "+type+" - "+filename)
    if (type == old_type) or (old_type == ""):
-      print(str(index)+": "+type+" - "+filename)
+      #print(str(index)+": "+type+" - "+filename)
       files.append( ('file',(os.path.split(filename)[1],open(filename,'rb')) ) )
    else:
       url = "https://daptst.csiro.au/dap/api/v2/collections/"+collectionId+"/files?path=/"+old_type
@@ -82,13 +83,10 @@ for asset in assets:
       url = "https://daptst.csiro.au/dap/api/v2/collections/"+collectionId+"/files?path=/"+type
       writeFiles = True
    if writeFiles: 
-      print(files)
-      print(url)
+      #print(files)
+      #print(url)
       r = requests.post(url, auth=auth, files=files)
-      if r.ok:
-         print("Upload completed successfully!")
-         print(r.text)
-      else:
+      if not r.ok:
          print("FILES: Something went wrong!")
          print(r.text)
       files = []
@@ -103,12 +101,10 @@ for asset in assets:
    type = asset.get("type")
    collectionFolder = "/"+type
    url = "https://daptst.csiro.au/dap/api/v2/collections/"+collectionId+"/file?path="+collectionFolder+"/"+os.path.split(filename)[1]
-   print("filename:"+os.path.split(filename)[1])
-   print("add metadata to "+collectionFolder+"/"+os.path.split(filename)[1])
+   #print("Adding metadata to asset: "+filename:"+os.path.split(filename)[1]))
+   print("Adding metadata to asset:"+collectionFolder+"/"+os.path.split(filename)[1])
    r = requests.get(url, auth=auth)
-   if r.ok:
-       print("GET metadata completed successfully!")
-   else:
+   if not r.ok:
        print("Something went wrong!")
 
    metadata = r.json()
@@ -118,7 +114,7 @@ for asset in assets:
        print("ERROR: POST request to '{0}' ".format(url) \
            + "did not contain a fileId in the response.")
        #You would need some error handling here.
-   print("fileId: {0}".format(fileId))
+   #print("fileId: {0}".format(fileId))
 
    params = metadata.get("parameters")
    #print(json.dumps(params, indent=2))
@@ -132,7 +128,7 @@ for asset in assets:
       params.append( { "name": "Creator", "dateValue": "", "dateValueString": "", "numericValue": "", "stringValue": "" } )
       params.append( { "name": "Description", "dateValue": "", "dateValueString": "", "numericValue": "", "stringValue": "" } )
    for param in params:
-     print("*** param '{0}' '{1}'".format(index,param))
+     #print("*** param '{0}' '{1}'".format(index,param))
      if param.get("name") == "Title":
        param["stringValue"] =  asset.get("title")
        params[index] = param
@@ -166,14 +162,14 @@ for asset in assets:
    #print(json.dumps(metadata, indent=2))
 
    url = "https://daptst.csiro.au/dap/api/v2/collections/"+collectionId+"/files/{0}".format(fileId)
-   print("PUT url '{0}'".format(url))
+   #print("PUT url '{0}'".format(url))
 
    save_request = requests.put(url,
        auth=auth,
        headers=headers_object,
        json=metadata)
  
-   print("Response code: {0}".format(save_request.status_code))
-   print(save_request.text)
+   #print("Response code: {0}".format(save_request.status_code))
+   #print(save_request.text)
 
-print("...End")
+#print("...End")
