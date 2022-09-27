@@ -1,5 +1,7 @@
 #
-# writes an image file and updated the metadata parameter - description text value
+# writes metadata to the DAP (daptst) as a draft to the exsiting collection id: 80194
+# uses the REST credentials from login.json
+# processes the metadata.json file
 #
 
 import requests
@@ -10,7 +12,6 @@ from datetime import datetime
 print("Start...")
 
 collectionId = "80194"
-collectionFolder = "/chris_16SEP2022"
 
 #Try to get REST credentials
 filename = "login.json"
@@ -27,7 +28,6 @@ auth = requests.auth.HTTPBasicAuth( username, password )
 headers_object = {"Accept":"application/json"}
 
 # get collection metadata
-
 url = "https://daptst.csiro.au/dap/api/v2/collections/"+collectionId
 r = requests.get(url, auth=auth)
 if r.ok:
@@ -36,13 +36,9 @@ else:
     print("Something went wrong!")
 metadata = r.json()
 new_metadata = metadata.copy()  #Copy the metadata dict.
-
-
-print(json.dumps(new_metadata, indent=2))
+#print(json.dumps(new_metadata, indent=2))
 
 #metada.json
-# {'name': 'Structural Geology', 'description': 'Fracture detection with Complex Shearlet Transform based on https://github.com/rahulprabhakaran/Automatic-Fracture-Detection-Code Using the Python port of the Matlab Toolbox Complex Shearlet-Based Ridge and Edge Measurement by Rafael Reisenhofer: https://github.com/rgcda/PyCoShREM', 'notebook': {'file': 'CoSh_ensemble_webodm.ipynb', 'version': 1.0, 'parameters': {'waveletEffSupp': 60.0, 'gaussianEffSupp': 20.0, 'scalesPerOctave': 4.0, 'shearLevel': 3.0, 'alpha': 0.2, 'octaves': 3.5, 'minContrast': 5.6, 'offset': 1.2, 'scalesUsedForPivotSearch': 1.0, 'min pixel value': 1.0, 'kernel size': 1024, 'min cluster size': 4098}, 'assets': [{'type': 'input', 'description': '', 'name': 'orthomosaic', 'format': 'tif'}, {'type': 'output', 'description': '', 'name': 'polyFile', 'format': 'shp'}, {'type': 'output', 'description': 'edge graph dot file', 'name': 'graph.dot', 'format': 'dot'}, {'type': 'output', 'description': 'A even-symmetric real-valued shearlet', 'name': 'fracture.png', 'format': 'png'}]}, 'author': 'Uli Kelka', 'organisation': 'CSIRO ', 'licence': {'name': 'It is distributed under BSD 3-Clause License'}, 'run': {'date': '15 September 2022', 'duration': 36000}}
-
 filename = "metadata.json"
 try:
     with open(filename) as f:
@@ -55,7 +51,7 @@ new_metadata["description"] = metadata.get("description")
 new_metadata["credit"] = metadata.get("author")
 notebook = metadata.get("notebook")
 new_metadata["lineage"] = "notebook:"+notebook.get("file")+"\nversion:"+str(notebook.get("version"))+"\nparameters: "+str(notebook.get("parameters"))
-print(json.dumps(new_metadata, indent=2))
+#print(json.dumps(new_metadata, indent=2))
 save_request = requests.put(url,
     auth=auth,
     headers=headers_object,
@@ -100,15 +96,7 @@ for asset in assets:
       writeFiles = False
    old_type = type
 
-#
-#https://confluence.csiro.au/display/dap/Update+and+publish+a+new+version+of+a+collection+-+API+V2
-#
-#If you wish to add or modify file level metadata, this requires two API calls.  Note that most DAP user's don't add file level metadata, and several image file formats will have EXIF metadata automatically extracted where possible.
-#Send a GET request to /api/v2/collections/{new_dataCollectionId}/file?path={url_encoded_path_to_folder_AND_file_name} , e.g. ...?path=%2Ffile_in_root_folder.txt . This will return metadata for the file.
-#From the response get the "id" value from the file metadata.  This page will refer to the "id" value as "file_id".
-#Modify the "parameters" list in the response. (TODO: this requires an entire page of its own)
-#Send a PUT request to /api/v2/collections/{new_dataCollectionId}/files/{file_id} .
-
+# add metadata for each of the files(assets)  uploaded previously
 index = 0
 for asset in assets:
    filename = asset.get("name")
@@ -132,7 +120,7 @@ for asset in assets:
    print("fileId: {0}".format(fileId))
 
    params = metadata.get("parameters")
-   print(json.dumps(params, indent=2))
+   #print(json.dumps(params, indent=2))
 
    #metadata["parameters"] = [{"title": "test by chris" } ]
    # params[].{name:Description, StringValue:}
@@ -170,7 +158,7 @@ for asset in assets:
      index = index + 1
 
    metadata["parameters"] = params
-   print(json.dumps(metadata, indent=2))
+   #print(json.dumps(metadata, indent=2))
 
    url = "https://daptst.csiro.au/dap/api/v2/collections/"+collectionId+"/files/{0}".format(fileId)
    print("PUT url '{0}'".format(url))
