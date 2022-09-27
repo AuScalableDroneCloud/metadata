@@ -112,6 +112,7 @@ for asset in assets:
        print("Something went wrong!")
 
    metadata = r.json()
+   #print(json.dumps(metadata, indent=2))
    fileId = metadata.get("id")
    if not fileId:
        print("ERROR: POST request to '{0}' ".format(url) \
@@ -125,14 +126,18 @@ for asset in assets:
    #metadata["parameters"] = [{"title": "test by chris" } ]
    # params[].{name:Description, StringValue:}
    index=0
+   # if no params (typically if not an image file), need to add at least title and creator fields
+   if (len(params) == 0):
+      params.append( { "name": "Title", "dateValue": "", "dateValueString": "", "numericValue": "", "stringValue": "" } )
+      params.append( { "name": "Creator", "dateValue": "", "dateValueString": "", "numericValue": "", "stringValue": "" } )
+      params.append( { "name": "Description", "dateValue": "", "dateValueString": "", "numericValue": "", "stringValue": "" } )
    for param in params:
      print("*** param '{0}' '{1}'".format(index,param))
      if param.get("name") == "Title":
-       param["stringValue"] =  "Structural Geology"
+       param["stringValue"] =  asset.get("title")
        params[index] = param
      if param.get("name") == "Creator":
-       sv = param.get("stringValue")
-       param["stringValue"] = sv
+       param["stringValue"] = asset.get("creator")
        params[index] = param
      if param.get("name") == "Creation Date":
        param["stringValue"] = datetime.now().strftime("%Y-%m-%d")
@@ -169,5 +174,6 @@ for asset in assets:
        json=metadata)
  
    print("Response code: {0}".format(save_request.status_code))
+   print(save_request.text)
 
 print("...End")

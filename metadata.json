@@ -20,23 +20,31 @@
 		},
 		"assets": [{
 				"type": "input",
+                                "title": "Structural Geology",
+                                "creator": "Uli Kelka",
 				"description": "orthomosaic",
 				"name": "data/Bingie_Bingie_area1.tif",
 				"format": "tif"
 			}, {
 				"type": "output",
+                                "title": "Structural Geology",
+                                "creator": "Uli Kelka",
 				"description": "shape file",
 				"name": "data/polyFile.shp",
 				"format": "shp"
 			},
 			{
 				"type": "output",
+                                "title": "Structural Geology",
+                                "creator": "Uli Kelka",
 				"description": "edge graph dot file",
 				"name": "data/graph.dot",
 				"format": "dot"
 			},
 			{
 				"type": "output",
+                                "title": "Structural Geology",
+                                "creator": "Uli Kelka",
 				"description": "A even-symmetric real-valued shearlet",
 				"name": "data/Bingie_Bingie_area1_edges.jpg",
 				"format": "jpg"
